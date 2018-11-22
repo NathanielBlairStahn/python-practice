@@ -29,13 +29,26 @@ def array_spiral(arr):
     left = 0
     right = len(arr[0])-1
 
+    # #Deal separately with the case when the array is a single row or column,
+    # #because in this case we only need to make a single pass, whereas the
+    # #while loop below would make both a forward and backward pass.
+    # if top == bottom:
+    #     #array is a single row; return the entry in each column
+    #     return (col for col in arr[0])
+    #
+    # if left == right:
+    #     #array is a single column; return the first entry of each row
+    #     return (row[0] for row in arr)
+
     while top <= bottom and left <= right:
         for j in range(left, right):
             yield arr[top][j]
         for i in range(top, bottom):
             yield arr[i][right]
+        #if bottom != top:
         for j in range(right, left, -1):
             yield arr[bottom][j]
+        #if left != right:
         for i in range(bottom, top, -1):
             yield arr[i][left]
 
