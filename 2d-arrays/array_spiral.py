@@ -34,12 +34,15 @@ def array_spiral(arr):
     #while loop below would make both a forward and backward pass, or
     #no passes at all if the array is 1x1.
     if top == bottom:
-        #array is a single row; return the entry in each column
-        for col in arr[0]: yield col
+        #Array is a single row; return the entry in each column
+        for entry in arr[0]: yield entry
     elif left == right:
-        #array is a single column; return the first entry of each row
+        #Array is a single column; return the first entry of each row
         for row in arr: yield row[0]
     else:
+        #Array has at least two rows and two columns.
+        #When either the top meets the bottom or the left
+        #meets the right, we are done spiraling.
         while top <= bottom and left <= right:
             for j in range(left, right):
                 yield arr[top][j]
@@ -56,6 +59,18 @@ def array_spiral(arr):
             bottom -= 1
             left += 1
             right -= 1
+
+        #Check one final case of a single square in the middle,
+        #which occurs with a square nxn array of odd size n:
+        #
+        #If the top met the bottom and the left met the right
+        #at the same time, then in the final iteration of the while
+        #loop, ALL of the for loops would have been skipped, so we
+        #failed to yield the final central element. Since the bounds
+        #would have been incremented, we revert them to get the
+        #correct indices.
+        if top > bottom and left > right:
+            yield arr[top-1][left-1]
 
 def array_spiral_orig(arr):
     """
