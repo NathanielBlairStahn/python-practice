@@ -21,7 +21,7 @@ def array_spiral(arr):
     9  10 11 12
     """
 
-    #Orient the array in like a matrix, so the 1st index is the row
+    #Orient the array like a matrix, so the 1st index is the row
     #and the 2nd index is the column.
     #That is, arr[i][j] is the element in the ith row and jth column.
     top = 0
@@ -69,8 +69,14 @@ def array_spiral(arr):
         #failed to yield the final central element. Since the bounds
         #would have been incremented, we revert them to get the
         #correct indices.
-        if top > bottom and left > right:
-            yield arr[top-1][left-1]
+        #
+        #Didn't work - also executed for even square matrices.
+        # if top > bottom and left > right:
+        #     yield arr[top-1][left-1]
+        #
+        #If array is square and n is odd, yield the central element.
+        if len(arr[0])==len(arr) and len(arr)%2:
+            yield arr[len(arr)//2][len(arr[0])//2]
 
 def array_spiral_orig(arr):
     """
@@ -86,7 +92,7 @@ def array_spiral_orig(arr):
     9  10 11 12
     """
 
-    #Orient the array in like a matrix, so the 1st index is the row
+    #Orient the array like a matrix, so the 1st index is the row
     #and the 2nd index is the column.
     #That is, arr[i][j] is the element in the ith row and jth column.
     top = 0
@@ -112,6 +118,7 @@ def array_spiral_orig(arr):
 def array_spiral_orig_fixed(arr):
     """
     Fixed(?) version of the original I came up with.
+    (Not fixed yet)
 
     Given a rectangular 2D array, yields the elements in a clockwise spiral order,
     starting at the upper left corner and ending at the center of the array.
@@ -123,7 +130,7 @@ def array_spiral_orig_fixed(arr):
     9  10 11 12
     """
 
-    #Orient the array in like a matrix, so the 1st index is the row
+    #Orient the array like a matrix, so the 1st index is the row
     #and the 2nd index is the column.
     #That is, arr[i][j] is the element in the ith row and jth column.
     top = 0
