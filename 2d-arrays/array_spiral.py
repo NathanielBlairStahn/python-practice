@@ -92,26 +92,10 @@ def array_spiral(arr):
         #Array is a single column; return the first entry of each row
         for row in arr[top:bottom+1]: yield row[left]
 
-    #Check one final case of a single square in the middle,
-    #which occurs with a square nxn array of odd size n:
-    #
-    #If the top met the bottom and the left met the right
-    #at the same time, then in the final iteration of the while
-    #loop, ALL of the for loops would have been skipped, so we
-    #failed to yield the final central element. Since the bounds
-    #would have been incremented, we revert them to get the
-    #correct indices.
-    #
-    #Didn't work - also executed for even square matrices.
-    # if top > bottom and left > right:
-    #     yield arr[top-1][left-1]
-    #
-    # #If array is square and n is odd, yield the central element.
-    # if len(arr[0])==len(arr) and len(arr)%2:
-    #     yield arr[len(arr)//2][len(arr[0])//2]
-
-def array_spiral1(arr):
+def array_spiral_bad(arr):
     """
+    DOES NOT WORK!
+
     Given a rectangular 2D array, yields the elements in a clockwise spiral order,
     starting at the upper left corner and ending at the center of the array.
 
@@ -181,6 +165,7 @@ def array_spiral1(arr):
 
 def array_spiral_orig(arr):
     """
+    DOES NOT WORK!
     Original version I came up with (has a bug).
 
     Given a rectangular 2D array, yields the elements in a clockwise spiral order,
@@ -218,11 +203,13 @@ def array_spiral_orig(arr):
 
 def array_spiral_orig_fixed(arr):
     """
-    Fixed(?) version of the original I came up with.
-    (Not fixed yet)
-
     Given a rectangular 2D array, yields the elements in a clockwise spiral order,
     starting at the upper left corner and ending at the center of the array.
+
+    Fixed(?) version of the original I came up with.
+    Use same strategy as I did to fix the better version above:
+    Stop the loop one iteration early to handle single rows or columns
+    as a special case at the end.
 
     For example:
 
@@ -239,7 +226,7 @@ def array_spiral_orig_fixed(arr):
     left = 0
     right = len(arr[0])
 
-    while top < bottom and left < right:
+    while top < bottom-1 and left < right-1:
         for j in range(left, right):
             yield arr[top][j]
         for i in range(top+1, bottom):
@@ -254,61 +241,70 @@ def array_spiral_orig_fixed(arr):
         left += 1
         right -= 1
 
+    if top == bottom-1:
+        # for j in range(left, right):
+        #     yield arr[top][j]
+        for element in arr[top][left:right]: yield element
+    elif left == right-1:
+        # for i in range(top, bottom):
+        #     yield arr[i][right-1]
+        for row in arr[top:bottom]: yield row[left]
+
 def test_spiral():
-    spiral = array_spiral
+    for spiral in [array_spiral, array_spiral_orig_fixed]:
 
-    a = np.arange(12).reshape(3,4) + 1
-    assert list(spiral(a)) == [1, 2, 3, 4, 8, 12, 11, 10, 9, 5, 6, 7]
+        a = np.arange(12).reshape(3,4) + 1
+        assert list(spiral(a)) == [1, 2, 3, 4, 8, 12, 11, 10, 9, 5, 6, 7]
 
-    a = np.arange(2*3).reshape(2,3)+1
-    assert list(spiral(a)) == [1, 2, 3, 6, 5, 4]
+        a = np.arange(2*3).reshape(2,3)+1
+        assert list(spiral(a)) == [1, 2, 3, 6, 5, 4]
 
-    assert list(spiral([[]])) == []
+        assert list(spiral([[]])) == []
 
-    assert list(spiral([[], [], []])) == []
+        assert list(spiral([[], [], []])) == []
 
-    assert list(spiral([[45]])) == [45]
+        assert list(spiral([[45]])) == [45]
 
-    assert list(spiral([[1,2]])) == [1,2]
+        assert list(spiral([[1,2]])) == [1,2]
 
-    assert list(spiral([[1,2,3]])) == [1,2,3]
+        assert list(spiral([[1,2,3]])) == [1,2,3]
 
-    assert list(spiral([[1],[2]])) == [1,2]
+        assert list(spiral([[1],[2]])) == [1,2]
 
-    assert list(spiral([[1],[2],[3]])) == [1,2,3]
+        assert list(spiral([[1],[2],[3]])) == [1,2,3]
 
-    a = np.arange(5).reshape(1,5) + 1
-    assert list(spiral(a)) == [1,2,3,4,5]
+        a = np.arange(5).reshape(1,5) + 1
+        assert list(spiral(a)) == [1,2,3,4,5]
 
-    a = np.arange(7).reshape(7,1) + 1
-    assert list(spiral(a)) == [1,2,3,4,5,6,7]
+        a = np.arange(7).reshape(7,1) + 1
+        assert list(spiral(a)) == [1,2,3,4,5,6,7]
 
-    a = np.arange(9*6).reshape(9,6)
-    assert list(spiral(a)) == [0, 1, 2, 3, 4, 5, 11, 17, 23, 29, 35, 41, 47, 53, 52, 51, 50, 49, 48, 42, 36, 30, 24, 18, 12, 6, 7, 8, 9, 10, 16, 22, 28, 34, 40, 46, 45, 44, 43, 37, 31, 25, 19, 13, 14, 15, 21, 27, 33, 39, 38, 32, 26, 20]
+        a = np.arange(9*6).reshape(9,6)
+        assert list(spiral(a)) == [0, 1, 2, 3, 4, 5, 11, 17, 23, 29, 35, 41, 47, 53, 52, 51, 50, 49, 48, 42, 36, 30, 24, 18, 12, 6, 7, 8, 9, 10, 16, 22, 28, 34, 40, 46, 45, 44, 43, 37, 31, 25, 19, 13, 14, 15, 21, 27, 33, 39, 38, 32, 26, 20]
 
-    a = [[1,2],[3,4]]
-    assert list(spiral(a)) == [1,2,4,3]
+        a = [[1,2],[3,4]]
+        assert list(spiral(a)) == [1,2,4,3]
 
-    a = [[1,2,3], [4,5,6], [7,8,9]]
-    assert list(spiral(a)) == [1, 2, 3, 6, 9, 8, 7, 4, 5]
+        a = [[1,2,3], [4,5,6], [7,8,9]]
+        assert list(spiral(a)) == [1, 2, 3, 6, 9, 8, 7, 4, 5]
 
-    a = np.arange(4*4).reshape(4,4)+1
-    assert list(spiral(a)) == [1, 2, 3, 4, 8, 12, 16, 15, 14, 13, 9, 5, 6, 7, 11, 10]
+        a = np.arange(4*4).reshape(4,4)+1
+        assert list(spiral(a)) == [1, 2, 3, 4, 8, 12, 16, 15, 14, 13, 9, 5, 6, 7, 11, 10]
 
-    a = np.arange(5*5).reshape(5,5)+1
-    assert list(spiral(a)) == [1, 2, 3, 4, 5, 10, 15, 20, 25, 24, 23, 22, 21, 16, 11, 6, 7, 8, 9, 14, 19, 18, 17, 12, 13]
+        a = np.arange(5*5).reshape(5,5)+1
+        assert list(spiral(a)) == [1, 2, 3, 4, 5, 10, 15, 20, 25, 24, 23, 22, 21, 16, 11, 6, 7, 8, 9, 14, 19, 18, 17, 12, 13]
 
-    a = np.arange(3*5).reshape(3,5) + 1
-    assert list(spiral(a)) == [1, 2, 3, 4, 5, 10, 15, 14, 13, 12, 11, 6, 7, 8, 9]
+        a = np.arange(3*5).reshape(3,5) + 1
+        assert list(spiral(a)) == [1, 2, 3, 4, 5, 10, 15, 14, 13, 12, 11, 6, 7, 8, 9]
 
 def test_spiral2():
-    spiral = array_spiral
+    for spiral in [array_spiral, array_spiral_orig_fixed]:
 
-    a = np.arange(3*5).reshape(5,3) + 1
-    assert list(spiral(a)) == [1, 2, 3, 6, 9, 12, 15, 14, 13, 10, 7, 4, 5, 8, 11]
+        a = np.arange(3*5).reshape(5,3) + 1
+        assert list(spiral(a)) == [1, 2, 3, 6, 9, 12, 15, 14, 13, 10, 7, 4, 5, 8, 11]
 
-    a = np.arange(4*6).reshape(4,6) + 1
-    assert list(spiral(a)) == [1, 2, 3, 4, 5, 6, 12, 18, 24, 23, 22, 21, 20, 19, 13, 7, 8, 9, 10, 11, 17, 16, 15, 14]
+        a = np.arange(4*6).reshape(4,6) + 1
+        assert list(spiral(a)) == [1, 2, 3, 4, 5, 6, 12, 18, 24, 23, 22, 21, 20, 19, 13, 7, 8, 9, 10, 11, 17, 16, 15, 14]
 
 
 
