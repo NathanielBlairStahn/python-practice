@@ -9,6 +9,8 @@ For example:
 9  10 11 12
 """
 
+import numpy as np
+
 def array_spiral(arr):
     """
     Given a rectangular 2D array, yields the elements in a clockwise spiral order,
@@ -152,6 +154,64 @@ def array_spiral_orig_fixed(arr):
         bottom -= 1
         left += 1
         right -= 1
+
+def test_spiral():
+    spiral = array_spiral
+
+    a = np.arange(12).reshape(3,4) + 1
+    assert list(spiral(a)) == [1, 2, 3, 4, 8, 12, 11, 10, 9, 5, 6, 7]
+
+    a = np.arange(2*3).reshape(2,3)+1
+    assert list(spiral(a)) == [1, 2, 3, 6, 5, 4]
+
+    assert list(spiral([[]])) == []
+
+    assert list(spiral([[], [], []])) == []
+
+    assert list(spiral([[45]])) == [45]
+
+    assert list(spiral([[1,2]])) == [1,2]
+
+    assert list(spiral([[1,2,3]])) == [1,2,3]
+
+    assert list(spiral([[1],[2]])) == [1,2]
+
+    assert list(spiral([[1],[2],[3]])) == [1,2,3]
+
+    a = np.arange(5).reshape(1,5) + 1
+    assert list(spiral(a)) == [1,2,3,4,5]
+
+    a = np.arange(7).reshape(7,1) + 1
+    assert list(spiral(a)) == [1,2,3,4,5,6,7]
+
+    a = np.arange(9*6).reshape(9,6)
+    assert list(spiral(a)) == [0, 1, 2, 3, 4, 5, 11, 17, 23, 29, 35, 41, 47, 53, 52, 51, 50, 49, 48, 42, 36, 30, 24, 18, 12, 6, 7, 8, 9, 10, 16, 22, 28, 34, 40, 46, 45, 44, 43, 37, 31, 25, 19, 13, 14, 15, 21, 27, 33, 39, 38, 32, 26, 20]
+
+    a = [[1,2],[3,4]]
+    assert list(spiral(a)) == [1,2,4,3]
+
+    a = [[1,2,3], [4,5,6], [7,8,9]]
+    assert list(spiral(a)) == [1, 2, 3, 6, 9, 8, 7, 4, 5]
+
+    a = np.arange(4*4).reshape(4,4)+1
+    assert list(spiral(a)) == [1, 2, 3, 4, 8, 12, 16, 15, 14, 13, 9, 5, 6, 7, 11, 10]
+
+    a = np.arange(5*5).reshape(5,5)+1
+    assert list(spiral(a)) == [1, 2, 3, 4, 5, 10, 15, 20, 25, 24, 23, 22, 21, 16, 11, 6, 7, 8, 9, 14, 19, 18, 17, 12, 13]
+
+    a = np.arange(3*5).reshape(3,5) + 1
+    assert list(spiral(a)) == [1, 2, 3, 4, 5, 10, 15, 14, 13, 12, 11, 6, 7, 8, 9]
+
+def test_spiral2():
+    spiral = array_spiral
+
+    a = np.arange(3*5).reshape(5,3) + 1
+    assert list(spiral(a)) == [1, 2, 3, 6, 9, 12, 15, 14, 13, 10, 7, 4, 5, 8, 11]
+
+    a = np.arange(4*6).reshape(4,6) + 1
+    assert list(spiral(a)) == [1, 2, 3, 4, 5, 6, 12, 18, 24, 23, 22, 21, 20, 19, 13, 7, 8, 9, 10, 11, 17, 16, 15, 14]
+
+
 
 if __name__=="__main__":
     arr = [[1,2,3,4], [5,6,7,8], [9,10,11,12]]
