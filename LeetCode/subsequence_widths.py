@@ -142,7 +142,7 @@ class Solution:
 def counting_sort_integers(values, max_val=None, inplace=False):
     """
     Sorts an array of integers using counting_sort.
-    Let n = len(values), k = max_value
+    Let n = len(values), k = max_val+1
     """
     if max_val is None:
         #Runs in O(n) time if max_val is None
@@ -177,19 +177,78 @@ def counting_sort_integers(values, max_val=None, inplace=False):
         output[i] = value
         counts[value] -= 1
 
+    #Total runtime, in iterations, is 2k+2n if max_key is passed and inplace==True.
+    #Another n is added if max_key is None or inplace is False, for a maximum
+    #runtime of 2k+4n.
+
     return output
 
-# def counting_sort(items, key=None, max_key=None):
-#     """
-#     Sorts an array of integers using counting_sort.
-#     """
-#     if key is None: #Assume values are integers in the range 0,1,2,...,max_key
-#         key = lambda x: x
-#
-#     if max_key is None:
-#         max_key = max(key(item) for item in items)
-#
-#     counts = [0 for _ in range(max_val+1)]
-#
-#     for item in items: #Iterate through items, to count how many times each occurs
-#         counts[key(item)] += 1
+def counting_sort(items, key=None, max_key=None):
+    """
+    Sorts an array of items by their integer keys, using counting_sort.
+    Implemented as a stable sort.
+
+    This is a modified version of the code described on Wikipedia:
+    https://en.wikipedia.org/wiki/Counting_sort
+
+    Parameters
+    ----------
+    items: list of items
+    key: function mapping each item to an integer key
+    max_key: the maximum value of a key
+    """
+    #If no key functions is passed, assume items
+    #are integers in the range 0,1,2,...,max_key
+    if key is None:
+        key = lambda x: x
+
+    #If the maximum key wasn't specified, find it.
+    if max_key is None:
+        #(Takes time n if max_key was not specified)
+        max_key = max(key(item) for item in items)
+
+    #Initialize an array to count the occurrances of keys.
+    #The index is the key, and counts[key] is the count of that key.
+    #(Takes time K)
+    counts = [0 for key in range(max_key+1)]
+
+    #Iterate through items, to count how many times each key occurs
+    #(Takes time n)
+    for item in items:
+        counts[key(item)] += 1
+
+    #Rename the counts array because we will be overwriting it to store indices
+    #of keys instead of counts of keys.
+    index_of = counts
+
+    #Create the index_of array as the cumulative sum of the counts array.
+    #When the loop finishes, we will have
+    #index_of[k] = counts[0] + counts[1] + ... + counts[k-1],
+    #but we can do it in place, replacing count[k] with index_of[k].
+    #
+    #The value index_of[k] is the start index of the items with key(item) = k.
+    #We will increment index_of[key] each time we place an item with key(item) = k.
+
+    index=0 #Store the current index (cumulative sum of counts)
+    #(Takes time K)
+    for k, count in enumerate(counts):
+        #k is the key, count is its count.
+        index_of[k] = index #Note that index_of = counts
+        index += count
+
+    #Create a new array for output. This is necessary if we want a stable sort.
+    #(Takes time n)
+    output = [None for _ in range(len(items))]
+
+    #Iterate through items, putting each item in the correct place in output.
+    #The index for the first item with each key is stored in index_of[key]
+    #(Takes time n)
+    for item in items:
+        #Put the item in the correct index for its key.
+        output[index_of[key(item)]] = item
+        #Increment the index for the next time we encounter the key.
+        index_of[key(item)] += 1
+
+
+    #Total runtime in iterations is 2k + 3n, plus another n if max_key is not passed.
+    return output
