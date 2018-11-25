@@ -183,7 +183,7 @@ def counting_sort_integers(values, max_val=None, inplace=False):
 
     return output
 
-def counting_sort(items, key=None, max_key=None):
+def counting_sort(items, key=None, max_key=None, min_key=0):
     """
     Sorts an array of items by their integer keys, using counting_sort.
     Implemented as a stable sort.
@@ -195,7 +195,8 @@ def counting_sort(items, key=None, max_key=None):
     ----------
     items: list of items
     key: function mapping each item to an integer key
-    max_key: the maximum value of a key
+    max_key: the maximum possible key
+    min_key: the minimum possible key
     """
     #If no key functions is passed, assume items
     #are integers in the range 0,1,2,...,max_key
@@ -207,15 +208,25 @@ def counting_sort(items, key=None, max_key=None):
         #(Takes time n if max_key was not specified)
         max_key = max(key(item) for item in items)
 
+    #If None was passed for the minimum key, find the minimum.
+    if min_key is None:
+        #(Takes time n if min_key was set to None)
+        min_key = min(key(item) for item in items)
+
     #Initialize an array to count the occurrances of keys.
     #The index is the key, and counts[key] is the count of that key.
     #(Takes time K)
-    counts = [0 for key in range(max_key+1)]
+    counts = [0 for k in range(max_key-min_key+1)]
+
+    #In case the minimum key is not 0, redefine the key function to return
+    #values from 0 to max_key-min_key, in order to index into the
+    #counts array.
+    shifted_key = lambda x: key(x) - min_key
 
     #Iterate through items, to count how many times each key occurs
     #(Takes time n)
     for item in items:
-        counts[key(item)] += 1
+        counts[shifted_key(item)] += 1
 
     #Rename the counts array because we will be overwriting it to store indices
     #of keys instead of counts of keys.
@@ -232,7 +243,7 @@ def counting_sort(items, key=None, max_key=None):
     index=0 #Store the current index (cumulative sum of counts)
     #(Takes time K)
     for k, count in enumerate(counts):
-        #k is the key, count is its count.
+        #k is the shifted key, count is its count.
         index_of[k] = index #Note that index_of = counts
         index += count
 
@@ -245,9 +256,9 @@ def counting_sort(items, key=None, max_key=None):
     #(Takes time n)
     for item in items:
         #Put the item in the correct index for its key.
-        output[index_of[key(item)]] = item
+        output[index_of[shifted_key(item)]] = item
         #Increment the index for the next time we encounter the key.
-        index_of[key(item)] += 1
+        index_of[shifted_key(item)] += 1
 
 
     #Total runtime in iterations is 2k + 3n, plus another n if max_key is not passed.
