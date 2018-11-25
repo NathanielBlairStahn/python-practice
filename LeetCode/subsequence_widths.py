@@ -137,3 +137,59 @@ class Solution:
                 total %= modulus
 
         return total
+
+
+def counting_sort_integers(values, max_val=None, inplace=False):
+    """
+    Sorts an array of integers using counting_sort.
+    Let n = len(values), k = max_value
+    """
+    if max_val is None:
+        #Runs in O(n) time if max_val is None
+        max_val = max(values)
+
+    #Assume values are integers in the range 0,1,2,...,max_val
+    #Runs in O(k) time
+    counts = [0 for _ in range(max_val+1)]
+
+    #Runs in O(n) time
+    for value in values:
+        counts[value] += 1
+
+    #Overwrite values if inplace==True, otherwise create a new array for output.
+    #Requires O(n) time if inplace is False.
+    output = values if inplace else [0 for _ in range(len(values))]
+
+    #Simultaneously iterate through output and counts arrays.
+    #value will be the index of counts array - this is the value
+    #we will be storing in the output array.
+    value = 0
+
+    #Iterate through output array, storing one value at a time.
+    #The for loop has n iterations.
+    #The inner while loop will have a total of k iterations.
+    #So the runtime for this loop is O(n+k)
+    for i in range(len(output)):
+        #Find the next value with a nonzero count.
+        while counts[value] == 0:
+            value += 1
+        #Store the value in the output array and decrease its count.
+        output[i] = value
+        counts[value] -= 1
+
+    return output
+
+# def counting_sort(items, key=None, max_key=None):
+#     """
+#     Sorts an array of integers using counting_sort.
+#     """
+#     if key is None: #Assume values are integers in the range 0,1,2,...,max_key
+#         key = lambda x: x
+#
+#     if max_key is None:
+#         max_key = max(key(item) for item in items)
+#
+#     counts = [0 for _ in range(max_val+1)]
+#
+#     for item in items: #Iterate through items, to count how many times each occurs
+#         counts[key(item)] += 1
