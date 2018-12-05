@@ -205,11 +205,20 @@ def counting_sort(items, key=None, max_key=None, min_key=0):
 
     #If the maximum key wasn't specified, find it.
     if max_key is None:
-        #(Takes time n if max_key was not specified)
-        max_key = max(key(item) for item in items)
-
+        #If min_key is also none, find both simultaneously.
+        if min_key is None:
+            max_key = min_key = key(item[0])
+            for item in items[1:]:
+                next_key = key(item)
+                if next_key < min_key:
+                    min_key = next_key
+                elif next_key > max_key:
+                    max_key = next_key
+        else:
+            #(Takes time n if max_key was not specified)
+            max_key = max(key(item) for item in items)
     #If None was passed for the minimum key, find the minimum.
-    if min_key is None:
+    elif min_key is None:
         #(Takes time n if min_key was set to None)
         min_key = min(key(item) for item in items)
 
