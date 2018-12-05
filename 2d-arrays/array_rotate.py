@@ -17,5 +17,6 @@ def rotate_square_array(arr):
     Given a square array, rotates the array 90 degrees clockwise,
     outputting to a new array.
     """
-    n = len(arr)
+    n = len(arr[0]) #not len(arr), because if arr = [[]], len(arr) would return 1, not 0
+    if n==0: return [[]] #Need special case because the below code would return [], not [[]]
     return [[arr[n-j-1][i] for j in range(n)] for i in range(n)]
