@@ -20,3 +20,32 @@ def rotate_square_array(arr):
     n = len(arr[0]) #not len(arr), because if arr = [[]], len(arr) would return 1, not 0
     if n==0: return [[]] #Need special case because the below code would return [], not [[]]
     return [[arr[n-j-1][i] for j in range(n)] for i in range(n)]
+
+def rotate_square_array_inplace(arr):
+    """
+    Given a square array, rotates the array 90 degrees clockwise in place.
+    """
+
+    n = len(arr)
+
+    # for m in range(n//2):
+    #     length = n-2*m
+    #     for i in range(length):
+    #         temp = arr[m][i]
+    #         arr[m][i] = arr[m][]
+
+    top = 0
+    bottom = n-1
+
+    while top < bottom:
+        left = top
+        right = bottom
+        for i in range(right-left):
+            temp = arr[top][left+i]
+            arr[top][left+i] = arr[bottom-i][left]
+            arr[bottom-i][left] = arr[bottom][right-i]
+            arr[bottom][right-i] = arr[top+i][right]
+            arr[top+i][right] = temp
+
+        top += 1
+        bottom -=1
