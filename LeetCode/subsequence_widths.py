@@ -1,15 +1,15 @@
-# From Leetcode (8/24/2018):
-#
-# 891. Sum of Subsequence Widths
-#
-# Given an array of integers A, consider all non-empty subsequences of A.
-#
-# For any sequence S, let the width of S be the difference between the maximum
-#  and minimum element of S.
-#
-# Return the sum of the widths of all subsequences of A.
-#
-# As the answer may be very large, return the answer modulo 10^9 + 7.
+"""From Leetcode (8/24/2018):
+
+891. Sum of Subsequence Widths
+
+Given an array of integers A, consider all non-empty subsequences of A.
+
+For any sequence S, let the width of S be the difference between the maximum
+ and minimum element of S.
+
+Return the sum of the widths of all subsequences of A.
+
+As the answer may be very large, return the answer modulo 10^9 + 7."""
 
 class Solution:
 #     def sumSubseqWidths(self, a):
@@ -247,7 +247,9 @@ def counting_sort(items, key=None, max_key=None, min_key=0):
     #but we can do it in place, replacing count[k] with index_of[k].
     #
     #The value index_of[k] is the start index of the items with key(item) = k.
-    #We will increment index_of[key] each time we place an item with key(item) = k.
+    #In the final loop, we will increment index_of[k] each time we place an
+    #item with key(item) = k, so that the next time k is encountered, we'll
+    #have the new correct index for that key.
 
     index=0 #Store the current index (cumulative sum of counts)
     #(Takes time K)
@@ -256,12 +258,13 @@ def counting_sort(items, key=None, max_key=None, min_key=0):
         index_of[k] = index #Note that index_of = counts
         index += count
 
-    #Create a new array for output. This is necessary if we want a stable sort.
+    #Create a new array for output. We can't modify the input in place
+    #if we want a stable sort.
     #(Takes time n)
     output = [None for _ in range(len(items))]
 
     #Iterate through items, putting each item in the correct place in output.
-    #The index for the first item with each key is stored in index_of[key]
+    #The index for the first item with each key k is stored in index_of[k]
     #(Takes time n)
     for item in items:
         #Put the item in the correct index for its key.
@@ -270,5 +273,6 @@ def counting_sort(items, key=None, max_key=None, min_key=0):
         index_of[shifted_key(item)] += 1
 
 
-    #Total runtime in iterations is 2k + 3n, plus another n if max_key is not passed.
+    #Total runtime in iterations is 2k + 3n, plus another n if max_key or min_key
+    #is not specified.
     return output
