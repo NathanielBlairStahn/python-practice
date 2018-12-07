@@ -1,4 +1,5 @@
-"""From Leetcode (8/24/2018):
+"""
+From Leetcode (8/24/2018):
 
 891. Sum of Subsequence Widths
 
@@ -9,7 +10,23 @@ For any sequence S, let the width of S be the difference between the maximum
 
 Return the sum of the widths of all subsequences of A.
 
-As the answer may be very large, return the answer modulo 10^9 + 7."""
+As the answer may be very large, return the answer modulo 10^9 + 7.
+
+Example 1:
+
+Input: [2,1,3]
+Output: 6
+Explanation:
+Subsequences are [1], [2], [3], [2,1], [2,3], [1,3], [2,1,3].
+The corresponding widths are 0, 0, 0, 1, 1, 2, 2.
+The sum of these widths is 6.
+
+
+Note:
+
+1 <= A.length <= 20000
+1 <= A[i] <= 20000
+"""
 
 class Solution:
 #     def sumSubseqWidths(self, a):
@@ -99,7 +116,8 @@ class Solution:
         #Sorting the elements allows us to count the subsequences
         #that have a particular pair of elements as its minimum
         #and maximum - see comments below.
-        a = sorted(a)
+        #a = sorted(a) #This was too slow to pass all the test cases. Try counting sort.
+        a = counting_sort_integers(a)
         n = len(a)
         total = 0
         sum_diffs = 0
@@ -139,22 +157,36 @@ class Solution:
         return total
 
 
-def counting_sort_integers(values, max_val=None, inplace=False):
+def counting_sort_integers(values, max_val=None, min_val=None, inplace=False):
     """
     Sorts an array of integers using counting_sort.
     Let n = len(values), k = max_val+1
     """
+    if len(values) == 0:
+        return values if inplace else []
+
+    #Runs in O(n) time if max_val is None or min_val is None
     if max_val is None:
-        #Runs in O(n) time if max_val is None
-        max_val = max(values)
+        #If both are None, find max and min simultaneously.
+        if min_val is None:
+            max_val = min_val = values[0]
+            for value in values[1:]:
+                if value > max_val:
+                    max_val = value
+                elif value < min_val:
+                    min_val = value
+        else:
+            max_val = max(values)
+    elif min_val is None:
+        min_val = min(values)
 
     #Assume values are integers in the range 0,1,2,...,max_val
     #Runs in O(k) time
-    counts = [0 for _ in range(max_val+1)]
+    counts = [0 for _ in range(min_val,max_val+1)]
 
     #Runs in O(n) time
     for value in values:
-        counts[value] += 1
+        counts[value-min_val] += 1
 
     #Overwrite values if inplace==True, otherwise create a new array for output.
     #Requires O(n) time if inplace is False.
@@ -163,7 +195,7 @@ def counting_sort_integers(values, max_val=None, inplace=False):
     #Simultaneously iterate through output and counts arrays.
     #value will be the index of counts array - this is the value
     #we will be storing in the output array.
-    value = 0
+    value = min_val
 
     #Iterate through output array, storing one value at a time.
     #The for loop has n iterations.
@@ -171,11 +203,11 @@ def counting_sort_integers(values, max_val=None, inplace=False):
     #So the runtime for this loop is O(n+k)
     for i in range(len(output)):
         #Find the next value with a nonzero count.
-        while counts[value] == 0:
+        while counts[value-min_val] == 0:
             value += 1
         #Store the value in the output array and decrease its count.
         output[i] = value
-        counts[value] -= 1
+        counts[value-min_val] -= 1
 
     #Total runtime, in iterations, is 2k+2n if max_key is passed and inplace==True.
     #Another n is added if max_key is None or inplace is False, for a maximum
@@ -183,7 +215,7 @@ def counting_sort_integers(values, max_val=None, inplace=False):
 
     return output
 
-def counting_sort(items, key=None, max_key=None, min_key=0):
+def counting_sort(items, key=None, max_key=None, min_key=None):
     """
     Sorts an array of items by their integer keys, using counting_sort.
     Implemented as a stable sort.

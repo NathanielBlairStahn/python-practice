@@ -53,11 +53,17 @@ def array_spiral(arr):
     #and the spiraling loop will exit since top==bottom.
     #This leaves the final single row [6,7] to be handled after the loop.
 
-    #Spiral until there is either one row or one column remaining (or both).
-    #There will be exactly one row remaining once top == bottom.
-    #There will be exactly one column remaining once left == right.
-    #If both occur simultaneously, then there is excatly one entry remaining,
-    #which could be considered as either one row or one column.
+    #Spiral until there is either one or zero rows or
+    #one or zero columns remaining (or both).
+    #
+    #There will be exactly one row remaining if ever top == bottom,
+    #and there will be zero rows remaining if ever top > bottom.
+    #There will be exactly one column remaining if ever left == right
+    #and there will be zero columns remainig if left > right.
+    #
+    #If both top == bottom and left == right occur simultaneously,
+    #then there is excatly one entry remaining, which could be
+    #considered as either one row or one column.
     while top < bottom and left < right:
         #Top row: (top,left) right to (top,right-1)
         for j in range(left, right):
@@ -77,13 +83,17 @@ def array_spiral(arr):
         left += 1
         right -= 1
 
-    #Once we're down to one row or one column, we don't want to spiral.
-    #Instead just iterate through the single row or column.
+    #Once we're down to one or zero rows or one or zero columns, we don't want to spiral.
+    #Instead just iterate through the single row or column, or do nothing
+    #if there's nothing left.
+    #
     #Note that if both top==bottom and left==right, we have exactly
     #one element left in the array, so we only want to iterate through
     #either one row or one column, but not both. Thus we use elif.
-    #If we have top>bottom or left>right, then the array is empty, so
-    #we don't want to yield anything, i.e. this code will be skipped.
+    #
+    #If we have top > bottom or left > right, then there are either no rows or
+    #no columns remaining in the array, so we we have already output everything,
+    #and we want to skip this code and not yield any more elements.
 
     if top == bottom:
         #Array is a single row; return the entry in each column
