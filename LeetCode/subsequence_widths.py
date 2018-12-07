@@ -116,8 +116,8 @@ class Solution:
         #Sorting the elements allows us to count the subsequences
         #that have a particular pair of elements as its minimum
         #and maximum - see comments below.
-        #a = sorted(a) #This was too slow to pass all the test cases. Try counting sort.
-        a = counting_sort_integers(a)
+        a = sorted(a) #This was too slow to pass all the test cases. Try counting sort.
+        #a = counting_sort_integers(a)
         n = len(a)
         total = 0
         sum_diffs = 0
@@ -141,7 +141,7 @@ class Solution:
 
         for i in range(1,(n+1)//2):
             sum_diffs += a[n-i] - a[i-1]
-            total += sum_diffs * ((2**(i-1) + 2**(n-i-1)) % modulus)
+            total += sum_diffs * ((1<<(i-1) + 1<<(n-i-1)) % modulus)
             if total >= modulus:
                 total %= modulus
 
@@ -150,7 +150,7 @@ class Solution:
         if n % 2 == 0:
             i = n//2
             sum_diffs += a[i] - a[i-1]
-            total += sum_diffs * (2**(i-1) % modulus)
+            total += sum_diffs * ((1<<(i-1)) % modulus)
             if total >= modulus:
                 total %= modulus
 
@@ -239,7 +239,7 @@ def counting_sort(items, key=None, max_key=None, min_key=None):
     if max_key is None:
         #If min_key is also none, find both simultaneously.
         if min_key is None:
-            max_key = min_key = key(item[0])
+            max_key = min_key = key(items[0])
             for item in items[1:]:
                 next_key = key(item)
                 if next_key < min_key:
