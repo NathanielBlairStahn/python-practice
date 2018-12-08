@@ -141,7 +141,7 @@ class Solution:
 
         for i in range(1,(n+1)//2):
             sum_diffs += a[n-i] - a[i-1]
-            total += sum_diffs * ((1<<(i-1) + 1<<(n-i-1)) % modulus)
+            total += sum_diffs * (1<<(i-1) + 1<<(n-i-1))
             if total >= modulus:
                 total %= modulus
 
@@ -150,7 +150,7 @@ class Solution:
         if n % 2 == 0:
             i = n//2
             sum_diffs += a[i] - a[i-1]
-            total += sum_diffs * ((1<<(i-1)) % modulus)
+            total += sum_diffs * (1<<(i-1))
             if total >= modulus:
                 total %= modulus
 
