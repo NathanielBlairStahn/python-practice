@@ -1,6 +1,6 @@
 """
 Implements a binary search tree with tree node as a separate "inner" class.
-Not the best idea...
+Seems reasonable, but perhaps not the best idea in Python...
 """
 
 class BinaryTreeNode:
@@ -30,8 +30,8 @@ class BinarySearchTree:
             #search to the right and pass current node as parent
             return self.find(value, current.right, current)
 
-    def add(self, value):
-        """Adds a value to the tree if it isn't already there.
+    def insert(self, value):
+        """Inserts a value into the tree if it isn't already there.
         Returns True if a new node was created, False if not (value already existed).
         """
         leaf, parent = self.find(value)
