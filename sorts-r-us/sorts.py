@@ -43,3 +43,21 @@ def sedgewick_shell_gaps(num_terms=float('inf'), upper_bound=float('inf')):
             yield term
 
         i += 1
+
+def shellsort(arr, inplace=True):
+    """Sorts an array using Shellsort with Sedgewick's increments."""
+
+    a = arr if inplace else arr.copy()
+    gaps = list(sedgewick_shell_gaps(upper_bound=len(a)-1))
+
+    for h in gaps[::-1]:
+        for i in range(h,len(a)):
+            element = a[i]
+            j = i
+            while j>=h and element < a[j-h]:
+                a[j] = a[j-h]
+                j -= h
+
+            a[j] = element
+
+    return a
