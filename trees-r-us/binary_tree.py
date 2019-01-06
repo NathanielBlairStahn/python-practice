@@ -58,3 +58,57 @@ class BinarySearchTree(BinaryTree):
             parent.right = BinarySearchTree(value)
 
         return True #value was added
+
+    def find_min(self):
+        """Returns the minimum value in the tree."""
+        node = self
+        while tree.left is not None:
+            node = tree.left
+        return node
+
+    def find_max(self):
+        """Returns the node of maximum value in the tree."""
+        node = self
+        while node.right is not None:
+            node = node.right
+        return node
+
+    def remove(self, value):
+        """Removes and returns a value from the tree."""
+        node, parent = self.find_with_parent(value)
+
+        if node is None:
+            return node.data #item not found - do nothing
+
+        if parent is None: #item is root (node is self) - not sure what to do here...
+            data = self.data
+            self.data = None
+            return data
+
+        data = node.data
+        #If node has 2 children, either remove the minimum from the right subtree
+        #or remove the maximum from the left subtree, and replace the node's data
+        #with this min or max value.
+        if node.left is not None and node.right is not None:
+            node.data = node.right.remove_min().data
+            #or:
+            #node.data = node.left.remove_max().data
+        elif parent.left is node:
+            parent.left = node.right if node.right is not None else node.left
+        else: #parent.right is node
+            parent.right = node.right if node.right is not None else node.left
+
+        return data
+
+
+    def remove_min(self):
+        node = self
+        parent = None
+        while node.left is not None:
+            parent = node
+            node = node.left
+
+        if parent is not None:
+            parent.left = node.right
+
+        return node
