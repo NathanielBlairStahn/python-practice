@@ -1,7 +1,7 @@
 """
 Suppose you have a bar with n seats in a row. Unfriendly people arrive
 and seat themselves randomly. Since they are unfriendly, they will not
-sit next to anyone who is already seated (so they just leave in this case).
+sit next to anyone who is already seated.
 
 What is the expected occupancy fraction when no one else can be seated?
 """
@@ -11,6 +11,10 @@ import numpy as np
 EMPTY = 0 #seat is empty
 UNAVAILABLE = 1 #seat is empty but unavailable
 OCCUPIED = 2 #seat is occupied
+
+def occupancy_fraction(seat_status):
+    """Compute the fraction of seats occupied in an array of seat statuses."""
+    return (seat_status==OCCUPIED).mean()
 
 def seat_people(num_seats):
     """Simulate seating people in n seats.
@@ -89,12 +93,42 @@ def seat_people_faster(num_seats):
 
     return seat_status
 
+def seat_people_recursive(num_seats):
+    """Simulate seating people in n seats using a recursive algorithm.
+    Returns an array of seat statuses (EMPTY, UNAVAILABLE, or OCCUPIED).
 
-def occupancy_fraction(seat_status):
-    """Compute the fraction of seats occupied in an array of seat statuses."""
-    return (seat_status==OCCUPIED).mean()
+    This runs in O(n) time, assuming numpy.random.randint(k) runs in
+    constant time for any k.
+    """
 
-def simulate_expected_occupancy(num_seats, num_trials, seating_function=seat_people):
+    #Using the fact that EMPTY=0
+    seat_status = np.zeros(num_seats, dtype=np.int)
+    _seat_subarray(seat_status)
+    return seat_status
+
+def _seat_subarray(seat_status):
+    """Recursively choose a random seat, then seat people to the left and to the right.
+    The array seat_status is assumed to be completely empty.
+    """
+    if len(seat_status) == 0:
+        return
+
+    #Choose a random seat and sit there
+    seat = np.random.randint(len(seat_status))
+    seat_status[seat] = OCCUPIED
+    #print(seat_status, seat)
+
+    #Seat people to the left, if there are seats to the left
+    if seat > 0:
+        seat_status[seat-1] = UNAVAILABLE
+        _seat_subarray(seat_status[:seat-1])
+     #Seat people to the right, if there are seats to the right
+    if seat < len(seat_status)-1:
+        seat_status[seat+1] = UNAVAILABLE
+        _seat_subarray(seat_status[seat+2:])
+
+
+def simulate_expected_occupancy(num_seats, num_trials, seating_function=seat_people_faster):
     """Run num_trials simulations to estimate the expected occupancy fraction
     for seating people in num_seats seats.
     """
