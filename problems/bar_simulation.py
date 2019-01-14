@@ -7,6 +7,7 @@ What is the expected occupancy fraction when no one else can be seated?
 """
 
 import numpy as np
+import fractions as frac
 
 EMPTY = 0 #seat is empty
 UNAVAILABLE = 1 #seat is empty but unavailable
@@ -138,3 +139,37 @@ def simulate_expected_occupancy(num_seats, num_trials, seating_function=seat_peo
         occupancy_sum += occupancy_fraction(seat_statuses)
 
     return occupancy_sum / num_trials
+
+def expected_occupancy(n, all=False):
+    """Compute the exact expected final occupancy for (or up to) n seats.
+    Uses memoized recursion, runs in n^2 time.
+    """
+
+    memo = [-1 for _ in range(n+1)]
+    answer = _compute_occupancies(n, memo)
+    memo[0] = frac.Fraction(0)
+    if all:
+        #This was not needed to compute for n seats, so fill it in.
+        memo[n-1] = _compute_occupancies(n-1,memo)
+        return memo
+    else:
+        return memo[n]
+
+def _compute_occupancies(n, memo):
+    """memo should have indices 0,1,...,n"""
+    if n <= 0:# or n > len(memo):
+        return 0
+
+    if memo[n] == -1:
+        numerator = sum([_compute_occupancies(k-2,memo)+_compute_occupancies(n-k-1,memo) for k in range(1,n+1)])
+        memo[n] = 1 + frac.Fraction(numerator, n)
+
+    return memo[n]
+
+def expected_fraction(n, all=False):
+    """Compute the expected final occupancy fraction for (or up to) n seats."""
+    occupancy = expected_occupancy(n,all)
+    if all:
+        return [occupancy[k] / max(k,1) for k in range(n+1)]
+    else:
+        return occupancy / max(n,1)
