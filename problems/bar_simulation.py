@@ -15,7 +15,7 @@ OCCUPIED = 2 #seat is occupied
 
 def occupancy_fraction(seat_status):
     """Compute the fraction of seats occupied in an array of seat statuses."""
-    return (seat_status==OCCUPIED).mean()
+    return (seat_status==OCCUPIED).mean() if len(seat_status) > 0 else 0
 
 def occupancy(seat_status):
     """Compute the number of occupied seats in an array of seat statuses."""
@@ -147,6 +147,21 @@ def estimate_expected_occupancy_fraction(num_seats, num_trials, seating_function
 def expected_occupancy(n, all=False):
     """Compute the exact expected final occupancy for (or up to) n seats.
     Uses memoized recursion, runs in O(n^2) time.
+
+    The values up to 12 are:
+    {0: '0 = 0.0000',
+     1: '1 = 1.0000',
+     2: '1 = 1.0000',
+     3: '5/3 = 1.6667',
+     4: '2 = 2.0000',
+     5: '37/15 = 2.4667',
+     6: '26/9 = 2.8889',
+     7: '349/105 = 3.3238',
+     8: '169/45 = 3.7556',
+     9: '11873/2835 = 4.1880',
+     10: '7277/1575 = 4.6203',
+     11: '157567/31185 = 5.0527',
+     12: '233249/42525 = 5.4850'}
     """
 
     memo = [-1 for _ in range(n+1)]
@@ -172,9 +187,36 @@ def _recursive_expected_occupancy(n, memo):
     return memo[n]
 
 def expected_occupancy_fraction(n, all=False):
-    """Compute the expected final occupancy fraction for (or up to) n seats."""
+    """Compute the expected final occupancy fraction for (or up to) n seats.
+
+    The values up to 12 are:
+    {0: '0 = 0.0000',
+     1: '1 = 1.0000',
+     2: '1/2 = 0.5000',
+     3: '5/9 = 0.5556',
+     4: '1/2 = 0.5000',
+     5: '37/75 = 0.4933',
+     6: '13/27 = 0.4815',
+     7: '349/735 = 0.4748',
+     8: '169/360 = 0.4694',
+     9: '11873/25515 = 0.4653',
+     10: '7277/15750 = 0.4620',
+     11: '157567/343035 = 0.4593',
+     12: '233249/510300 = 0.4571'}
+    """
     e_occupancy = expected_occupancy(n,all)
     if all:
         return [e_occupancy[k] / max(k,1) for k in range(n+1)]
     else:
         return e_occupancy / max(n,1)
+
+def main():
+    #Print exact expected occupancy for n=0,1,...,12
+    print("Expected occupancies:\n", {n: f'{str(x)} = {float(x):6.4f}' for n,x in enumerate(expected_occupancy(12,True))})
+    #Print exact expected occupancy fractions for n=0,1,...,12
+    print("\nExpected occupancy fractions:\n", {n: f'{str(x)} = {float(x):6.4f}' for n,x in enumerate(expected_occupancy_fraction(12,True))})
+    #Print estimated expected occupancy fractions for n=0,1,...,12
+    print("\nEstimated expected occupancy fractions:\n", {n: f'{x:6.4f}' for n,x in enumerate(estimate_expected_occupancy_fraction(n,1000) for n in range(12+1))})
+
+if __name__=="__main__":
+    main()
