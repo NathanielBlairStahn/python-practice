@@ -7,7 +7,7 @@ What is the expected occupancy fraction when no one else can be seated?
 """
 
 import numpy as np
-import fractions as frac
+from fractions import Fraction
 
 EMPTY = 0 #seat is empty
 UNAVAILABLE = 1 #seat is empty but unavailable
@@ -17,9 +17,13 @@ def occupancy_fraction(seat_status):
     """Compute the fraction of seats occupied in an array of seat statuses."""
     return (seat_status==OCCUPIED).mean()
 
+def occupancy(seat_status):
+    """Compute the number of occupied seats in an array of seat statuses."""
+    return (seat_status==OCCUPIED).sum()
+
 def seat_people(num_seats):
     """Simulate seating people in n seats.
-    Returns an array of seat statuses (EMPTY, UNAVAILABLE, or OCCUPIED).
+    Returns a 1xn array of seat statuses (EMPTY, UNAVAILABLE, or OCCUPIED).
 
     Loop through people until no seats are left. For each iteration,
     check the seat statuses to see if any are empty. If so, choose a
@@ -53,7 +57,7 @@ def seat_people(num_seats):
 
 def seat_people_faster(num_seats):
     """Simulate seating people in n seats using a rejection algorithm.
-    Returns an array of seat statuses (EMPTY, UNAVAILABLE, or OCCUPIED).
+    Returns a 1xn array of seat statuses (EMPTY, UNAVAILABLE, or OCCUPIED).
 
     Assume we randomly assign n seats to n people without replacement,
     so each person from 1 to n has a unique randomly assigned seat
@@ -96,7 +100,7 @@ def seat_people_faster(num_seats):
 
 def seat_people_recursive(num_seats):
     """Simulate seating people in n seats using a recursive algorithm.
-    Returns an array of seat statuses (EMPTY, UNAVAILABLE, or OCCUPIED).
+    Returns a 1xn array of seat statuses (EMPTY, UNAVAILABLE, or OCCUPIED).
 
     This runs in O(n) time, assuming numpy.random.randint(k) runs in
     constant time for any k.
@@ -129,7 +133,7 @@ def _seat_subarray(seat_status):
         _seat_subarray(seat_status[seat+2:])
 
 
-def simulate_expected_occupancy(num_seats, num_trials, seating_function=seat_people_faster):
+def estimate_expected_occupancy_fraction(num_seats, num_trials, seating_function=seat_people_faster):
     """Run num_trials simulations to estimate the expected occupancy fraction
     for seating people in num_seats seats.
     """
@@ -142,34 +146,35 @@ def simulate_expected_occupancy(num_seats, num_trials, seating_function=seat_peo
 
 def expected_occupancy(n, all=False):
     """Compute the exact expected final occupancy for (or up to) n seats.
-    Uses memoized recursion, runs in n^2 time.
+    Uses memoized recursion, runs in O(n^2) time.
     """
 
     memo = [-1 for _ in range(n+1)]
-    answer = _compute_occupancies(n, memo)
-    memo[0] = frac.Fraction(0)
+    _recursive_expected_occupancy(n, memo)
+    memo[0] = Fraction(0)
     if all:
-        #This was not needed to compute for n seats, so fill it in.
-        memo[n-1] = _compute_occupancies(n-1,memo)
+        #The value for n-1 seats was not needed to compute the value
+        #for n seats (because it skips to n-2), so fill it in.
+        _recursive_expected_occupancy(n-1,memo)
         return memo
     else:
         return memo[n]
 
-def _compute_occupancies(n, memo):
-    """memo should have indices 0,1,...,n"""
+def _recursive_expected_occupancy(n, memo):
+    """memo should have n+1 indices: 0,1,...,n"""
     if n <= 0:# or n > len(memo):
         return 0
 
     if memo[n] == -1:
-        numerator = sum([_compute_occupancies(k-2,memo)+_compute_occupancies(n-k-1,memo) for k in range(1,n+1)])
-        memo[n] = 1 + frac.Fraction(numerator, n)
+        numerator = sum([_recursive_expected_occupancy(k-2,memo)+_recursive_expected_occupancy(n-k-1,memo) for k in range(1,n+1)])
+        memo[n] = 1 + Fraction(numerator, n)
 
     return memo[n]
 
-def expected_fraction(n, all=False):
+def expected_occupancy_fraction(n, all=False):
     """Compute the expected final occupancy fraction for (or up to) n seats."""
-    occupancy = expected_occupancy(n,all)
+    e_occupancy = expected_occupancy(n,all)
     if all:
-        return [occupancy[k] / max(k,1) for k in range(n+1)]
+        return [e_occupancy[k] / max(k,1) for k in range(n+1)]
     else:
-        return occupancy / max(n,1)
+        return e_occupancy / max(n,1)
