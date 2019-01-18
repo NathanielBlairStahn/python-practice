@@ -136,6 +136,9 @@ def _seat_subarray(seat_status):
 def estimate_expected_occupancy_fraction(num_seats, num_trials, seating_function=seat_people_faster):
     """Run num_trials simulations to estimate the expected occupancy fraction
     for seating people in num_seats seats.
+
+    As n goes to infinity, the occupancy fraction appears to converge to
+    a value near 43.2%
     """
     occupancy_sum = 0
     for trial in range(num_trials):
@@ -169,7 +172,7 @@ def expected_occupancy(n, all=False):
     memo[0] = Fraction(0)
     if all:
         #The value for n-1 seats was not needed to compute the value
-        #for n seats (because it skips to n-2), so fill it in.
+        #for n seats (because it skips directly to n-2), so fill it in.
         _recursive_expected_occupancy(n-1,memo)
         return memo
     else:
@@ -212,11 +215,11 @@ def expected_occupancy_fraction(n, all=False):
 
 def main():
     #Print exact expected occupancy for n=0,1,...,12
-    print("Expected occupancies:\n", {n: f'{str(x)} = {float(x):6.4f}' for n,x in enumerate(expected_occupancy(12,True))})
+    print("Expected occupancies up to n=12:\n", {n: f'{str(x)} = {float(x):6.4f}' for n,x in enumerate(expected_occupancy(12,True))})
     #Print exact expected occupancy fractions for n=0,1,...,12
-    print("\nExpected occupancy fractions:\n", {n: f'{str(x)} = {float(x):6.4f}' for n,x in enumerate(expected_occupancy_fraction(12,True))})
+    print("\nExpected occupancy fractions up to n=12:\n", {n: f'{str(x)} = {float(x):6.4f}' for n,x in enumerate(expected_occupancy_fraction(12,True))})
     #Print estimated expected occupancy fractions for n=0,1,...,12
-    print("\nEstimated expected occupancy fractions:\n", {n: f'{x:6.4f}' for n,x in enumerate(estimate_expected_occupancy_fraction(n,1000) for n in range(12+1))})
+    print("\nEstimated expected occupancy fractions up to n=12:\n", {n: f'{x:6.4f}' for n,x in enumerate(estimate_expected_occupancy_fraction(n,1000) for n in range(12+1))})
 
 if __name__=="__main__":
     main()
