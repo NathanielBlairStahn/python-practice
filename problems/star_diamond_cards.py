@@ -1,8 +1,8 @@
 import numpy as np
 
-class Draw:
+class FinalHand:
     """
-    Class to encode one complete "draw" of cards including discarding
+    Class to encode the final hand in one complete draw of cards, including discarding
     stars and re-drawing.
     """
     def __init__(self, deck_size, initial_hand_size, next_card, stars, diamonds):
@@ -49,7 +49,7 @@ class Draw:
         """
         Returns True if the hand contains a diamond.
         """
-        return any(diamonds < self.next_card)
+        return any(self.diamonds < self.next_card)
 
     def is_success(self):
         """
@@ -117,8 +117,16 @@ def simulate_draw(num_cards=60, num_stars=3, num_diamonds=3, num_drawn=5, num_to
         else:
             break
 
+    # return any(diamonds < next_card)
     # return next_card, stars, diamonds
-    return Draw(num_cards, num_drawn, next_card, stars, diamonds)
+    return FinalHand(num_cards, num_drawn, next_card, stars, diamonds)
 
-def simulate_diamond_prob():
-    pass
+def simulate_diamond_prob(num_trials):
+    """
+    The probability of having a diamond in your final hand appears to be around 0.267.
+    """
+    hands_with_diamond = 0
+    for trial in range(num_trials):
+        hands_with_diamond += simulate_draw().has_diamond()
+        # hands_with_diamond += simulate_draw()
+    return hands_with_diamond / num_trials
