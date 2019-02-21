@@ -20,11 +20,17 @@ class Draw:
         """
         return [star for star in self.stars if star < self.next_card]
 
+    def diamonds_in_hand(self):
+        """
+        Returns a list of the diamonds in the current hand.
+        """
+        return [diamond for diamond in self.diamonds if diamond < self.next_card]
+
     def num_redrawn(self):
         """
         Returns the total number of cards redrawn.
         """
-        return self.next_card - self.initial_hand_size - len(self.discarded_stars())
+        return self.next_card - self.initial_hand_size
 
     def cards_in_hand(self):
         """
@@ -37,7 +43,7 @@ class Draw:
         """
         Returns the number of cards in the current hand.
         """
-        return len([self.cards_in_hand()])
+        return len(list(self.cards_in_hand()))
 
     def has_diamond(self):
         """
