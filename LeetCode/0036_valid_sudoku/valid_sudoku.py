@@ -54,46 +54,27 @@ class Solution:
     def isValidSudoku(self, board):
         # value_counter = {str(i): 0 for i in range(1,10)}
 
-        # Check rows
-        # for row in board:
-        #     for num in row:
-        #         if num != '.':
-        #             value_counter[num] += 1
-        #     if any(value_counter[num] > 1 for num in value_counter):
-        #         return False
-        #
-        # # Reset counter
-        # for num in value_counter:
-        #     value_counter[num] = 0
-
-        # board is itself a list of rows
+        # Check rows:
+        # The board is itself a list of rows.
         rows = board
         if not self.isValidCollectionOfGroups(rows): return False
 
-        # Check columns
-        # for c in range(9):
-        #     for r in range(9):
-        #         if board[r][c] != '.':
-        #             value_counter[board[r][c]] += 1
-        #
-        # for col in zip(*board):
-        #     for num in col:
-        #         if num != '.':
-        #             value_counter[num] += 1
-        #     if any(value_counter[num] > 1 for num in value_counter):
-        #         return False
-        #
-        # # Reset counter
-        # for num in value_counter:
-        #     value_counter[num] = 0
-
-        # Transpose board using zip(*board) to get list of columns
+        # Check columns:
+        # Transpose board using zip(*board) to get a list of columns.
         columns = zip(*board)
         if not self.isValidCollectionOfGroups(columns): return False
 
-        # Check subsquares
-        #
-        subsquares = [[board[3*(square//3) + i][3*(square%3) + j] for i in range(3) for j in range(3)] for square in range(9)]
+        # Check subsquares:
+        # Number the 9 subsquares as follows:
+        # 0 1 2
+        # 3 4 5
+        # 6 7 8
+        # If s is the number of the square as above,
+        # then the rows in square s are 3*(s//3) + 0,1,2,
+        # and the columns in square s are 3*(s%3) + 0,1,2.
+        subsquares = [[board[3*(square//3) + i][3*(square%3) + j]
+            for i in range(3) for j in range(3)]
+            for square in range(9)]
         if not self.isValidCollectionOfGroups(subsquares): return False
 
         return True
@@ -102,7 +83,7 @@ class Solution:
         """A "group" can be a row, columm, or 3x3 subsquare.
         A collection of groups can be all rows, all columns, or all 3x3 subsquares.
         """
-        print(collection)
+        # print(collection)
         value_counter = {str(i): 0 for i in range(1,10)}
         for group in collection:
             for num in group:
