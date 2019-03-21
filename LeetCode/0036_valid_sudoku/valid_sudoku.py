@@ -93,7 +93,7 @@ class Solution:
 
         # Check subsquares
         #
-        subsquares = [[board[square//3 + i][square%3 + j] for i in range(3) for j in range(3)] for square in range(9)]
+        subsquares = [[board[3*(square//3) + i][3*(square%3) + j] for i in range(3) for j in range(3)] for square in range(9)]
         if not self.isValidCollectionOfGroups(subsquares): return False
 
         return True
@@ -102,6 +102,7 @@ class Solution:
         """A "group" can be a row, columm, or 3x3 subsquare.
         A collection of groups can be all rows, all columns, or all 3x3 subsquares.
         """
+        print(collection)
         value_counter = {str(i): 0 for i in range(1,10)}
         for group in collection:
             for num in group:
