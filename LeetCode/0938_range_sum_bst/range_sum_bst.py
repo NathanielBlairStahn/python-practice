@@ -47,3 +47,17 @@ class Solution:
             self.total += root.val
 
         return self.total
+
+class Solution2:
+    def rangeSumBST(self, root: TreeNode, L: int, R: int) -> int:
+        def depth_first_totaler(root):
+            if root is None: return 0
+
+            if root.val < L:
+                return depth_first_totaler(root.right)
+            elif root.val > R:
+                return depth_first_totaler(root.left)
+            else:
+                return depth_first_totaler(root.left) + root.val + depth_first_totaler(root.right)
+
+        return depth_first_totaler(root)
