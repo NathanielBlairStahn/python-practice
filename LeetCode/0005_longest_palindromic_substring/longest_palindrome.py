@@ -12,6 +12,11 @@ Example 2:
 
 Input: "cbbd"
 Output: "bb"
+
+Test cases:
+aaabaaaa
+fklkffa
+affklkffffaaaffaffffaaafff
 """
 
 def longest_initial_palindrome(s: str) -> str:
@@ -23,11 +28,11 @@ def longest_initial_palindrome(s: str) -> str:
     # Without this step, the method fails for, e.g.
     # 'abaa', 'aaaabaaaaaaaaaa', 'aaabbcbbaaaaa',
     # where the number of trailing a's is greater than the number of leading a's.
-    while start < end and s[start] == s[0] and s[end] == s[0]:
-        start += 1
-        end -= 1
-    while start < end and s[end] == s[0]:
-        end -= 1
+    # while start < end and s[start] == s[0] and s[end] == s[0]:
+    #     start += 1
+    #     end -= 1
+    # while start < end and s[end] == s[0]:
+    #     end -= 1
 
     # Walk backwards through string:
     # 1. If current last letter equals the beginning letter,
@@ -39,10 +44,11 @@ def longest_initial_palindrome(s: str) -> str:
     #    walking backwards through string.
     # 4. We've found a palindrome when the pointers meet
     #    in the middle.
+    second_distinct_letter = False
     while start < end:
         if s[start] == s[end]:
             start += 1
-        else:
+        elif s[end] != s[0]:
             start = 0
         end -= 1
 
