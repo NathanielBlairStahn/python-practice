@@ -16,7 +16,11 @@ Output: "bb"
 Test cases:
 aaabaaaa
 fklkffa
-affklkffffaaaffaffffaaafff
+affklkffffaaaffaffffaaafff -> "fffaaaffaffffaaaf" (should be fffaaafff)
+
+For initial palindrome:
+fffaaaffaffffaaafff -> fffaaaffaffffaaaf (should be fff)
+ffaaaffaffffaaafff -> ffaaaffaffffaaa (should be ffaaaff)
 """
 
 def longest_initial_palindrome(s: str) -> str:
@@ -44,12 +48,14 @@ def longest_initial_palindrome(s: str) -> str:
     #    walking backwards through string.
     # 4. We've found a palindrome when the pointers meet
     #    in the middle.
-    second_distinct_letter = False
+    end_of_initial_run = 0
     while start < end:
         if s[start] == s[end]:
             start += 1
-        elif s[end] != s[0]:
-            start = 0
+            if start-1 == end_of_initial_run and s[start] == s[0]:
+                end_of_initial_run = start
+        elif not (start-1 == end_of_initial_run and s[end] == s[0]):
+            start = end_of_initial_run = 0
         end -= 1
 
     # Suppose the longest palindrome has length k.
